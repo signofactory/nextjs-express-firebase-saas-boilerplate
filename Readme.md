@@ -6,7 +6,7 @@ This is the branch for Chapter 1 of a [Medium series of articles that have the o
 
 ## Installation
 
-You'll need to get the client and admin credentials for firebase and place them in `packages/web/src/config/firebaseAdminConfig.json` and `packages/web/src/config/firebaseClientConfig.json`.
+You'll need to get the client and admin credentials for firebase and place them in `packages/web/src/config/firebaseAdminConfig.json` and `packages/web/src/config/firebaseClientConfig.json`. You can get those from the firebase console. We have detailed instruction on the original Medium post above 👆🏼.
 
 Sample structure for `firebaseAdminConfig.json`:
 
@@ -26,6 +26,18 @@ Sample structure for `firebaseAdminConfig.json`:
 ```
 
 Sample structure for `firebaseClientConfig.json`
+
+```json
+{
+  "apiKey": string,
+  "authDomain": string,
+  "projectId": string,
+  "storageBucket": string,
+  "messagingSenderId": string,
+  "appId": string,
+  "measurementId": string
+}
+```
 
 ## Getting started
 
