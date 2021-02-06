@@ -1,13 +1,19 @@
 import Head from 'next/head';
 
+// Auth
+import { login } from 'shared/utils/auth/functions/login';
+
 // Components
 import { Card, Button } from 'antd';
 import { GoogleOutlined } from '@ant-design/icons';
+import { Footer } from 'shared/components/Footer';
 
 // Styles
 import styles from 'styles/pages/home.module.scss';
 
 const Home = () => {
+  const handleLogin = async () => await login({ redirect: '/logged' });
+
   return (
     <div className={styles.container}>
       <Head>
@@ -23,12 +29,14 @@ const Home = () => {
             type="primary"
             size="large"
             icon={<GoogleOutlined />}
-            onClick={() => null}
+            onClick={handleLogin}
           >
             Sign in with Google
           </Button>
         </Card>
       </main>
+
+      <Footer />
     </div>
   );
 };

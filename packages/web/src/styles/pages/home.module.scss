@@ -16,8 +16,13 @@
   }
 
   .card {
-    .googleSignIn {
+    .googleSignIn,
+    .signOut {
       width: 100%;
+    }
+
+    .signOut {
+      margin-top: 20px;
     }
   }
 }

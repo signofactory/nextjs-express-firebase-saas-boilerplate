@@ -7,5 +7,6 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {},
-  "scripts": {}
+  "scripts": {},
+  "dependencies": {}
 }
