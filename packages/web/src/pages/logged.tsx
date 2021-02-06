@@ -53,6 +53,8 @@ const Logged = (
   );
 };
 
-export const getServerSideProps = withAuth()();
+export const getServerSideProps = withAuth()(async ({ AuthUser }) => {
+  console.log(AuthUser.name);
+});
 
 export default Logged;

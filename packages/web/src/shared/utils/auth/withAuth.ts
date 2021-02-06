@@ -1,13 +1,21 @@
+// Inspired from https://github.com/gladly-team/next-firebase-auth
+// Next stuff
+import { GetServerSidePropsContext } from 'next';
+
 // Utils
 import nookies from 'nookies';
 
 // Firebase auth
 import { firebaseAdmin } from 'shared/utils/auth/initializers/firebaseAdmin';
+import { refreshExpiredIdToken } from './functions/refreshExpiredToken';
+
+// Types
+type AuthUserType =
+  | (firebaseAdmin.auth.DecodedIdToken & { token: string })
+  | undefined;
 
 /**
- * Inspired from https://github.com/gladly-team/next-firebase-auth
- *
- * An wrapper for a page's exported getServerSideProps that
+ * A wrapper for a page's exported getServerSideProps that
  * provides the authed user's info as a prop. Optionally,
  * this handles redirects based on auth status.
  * See this discussion on how best to use getServerSideProps
@@ -16,23 +24,47 @@ import { firebaseAdmin } from 'shared/utils/auth/initializers/firebaseAdmin';
  * @param {String} unauthedRedirect - The url to redirect a user to. Defaults to '/'
  * @return {Object} response
  * @return {Object} response.props - The server-side props
- * @return {Object} response.props.AuthUser
+ * @return {AuthUserType} response.props.AuthUser
  */
+
+// Refreshes the token if it's expired
+const verifyOrRefreshIdToken = async (
+  idToken: string,
+  refreshToken: string
+): Promise<AuthUserType> => {
+  try {
+    return {
+      ...(await firebaseAdmin.auth().verifyIdToken(idToken, true)),
+      token: idToken,
+    };
+  } catch {
+    const token = await refreshExpiredIdToken(refreshToken);
+
+    return {
+      ...(await firebaseAdmin.auth().verifyIdToken(token, true)),
+      token: token,
+    };
+  }
+};
+
 const withAuth = ({ unauthedRedirect } = { unauthedRedirect: '/' }) => (
   getServerSidePropsFunc?
-) => async (ctx) => {
+) => async (ctx: GetServerSidePropsContext & { AuthUser: AuthUserType }) => {
+  // Gets the user and builds the object
   const cookies = nookies.get(ctx);
-  let AuthUser;
+  let AuthUser: AuthUserType;
 
   if (cookies?.token) {
-    AuthUser = await firebaseAdmin.auth().verifyIdToken(cookies.token);
-    AuthUser.token = cookies.token;
+    const { idToken, refreshToken } = JSON.parse(cookies.token);
+
+    AuthUser = await verifyOrRefreshIdToken(idToken, refreshToken);
   }
 
-  // If specified, redirect to the login page if the user is unauthed.
+  // Redirect to the login page if the user is unauthed
   if (!AuthUser || !AuthUser.uid) {
     return {
       redirect: { destination: unauthedRedirect, permanent: false },
+      props: {} as never,
     };
   }
 
@@ -44,6 +76,7 @@ const withAuth = ({ unauthedRedirect } = { unauthedRedirect: '/' }) => (
     // Add the AuthUser to Next.js context so pages can use
     // it in `getServerSideProps`, if needed.
     ctx.AuthUser = AuthUser;
+
     const composedProps = (await getServerSidePropsFunc(ctx)) || {};
     if (composedProps) {
       if (composedProps.props) {
