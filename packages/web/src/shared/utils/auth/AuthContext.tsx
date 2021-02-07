@@ -7,14 +7,15 @@ import nookies from 'nookies';
 
 // Auth
 import { firebaseClient } from './initializers/firebaseClient';
+import UserAPI from '../lib/api/user';
 // import Api from 'shared/utils/Api';
 
-const AuthContext = createContext<{ user: firebaseClient.User | null }>({
+const AuthContext = createContext<{ user: User | null }>({
   user: null,
 });
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<firebaseClient.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (typeof window !== undefined) {
@@ -37,12 +38,15 @@ export const AuthProvider: React.FC = ({ children }) => {
         idToken,
         refreshToken,
       };
-      // const userFromServer = await Api.getUserFromToken(token);
-      // if (userFromServer) setUser(userFromServer);
 
-      setUser(user);
+      // Updates the content of the cookie
       nookies.destroy(null, 'token');
       nookies.set(null, 'token', JSON.stringify(tokenCookieContent), {});
+
+      // Fetches the current user from the server (instead of getting it from Firebase)
+      const userFromServer = await UserAPI.getCurrent();
+      if (userFromServer) setUser(userFromServer);
+
       console.log(`[AUTH] Updated user`);
     });
   }, []);

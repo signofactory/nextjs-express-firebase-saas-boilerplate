@@ -6,7 +6,7 @@ axios.defaults.baseURL =
   process.env.NEXT_PUBLIC_API_PATH || 'http://localhost/';
 
 const SubmissionAPI = {
-  get: async (token: string) => {
+  get: async () => {
     try {
       return await axios.get(`/submission?id=${id}`);
     } catch (error) {

@@ -116,3 +116,4 @@ dist
 .pnp.*
 
 src/config/firebaseAdminConfig.json
+src/config/firebaseClientConfig.json

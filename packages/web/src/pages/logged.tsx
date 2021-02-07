@@ -15,11 +15,10 @@ import { LogoutOutlined } from '@ant-design/icons';
 import styles from 'styles/pages/home.module.scss';
 import { Footer } from 'shared/components/Footer';
 import withAuth from 'shared/utils/auth/withAuth';
+import { useAuth } from 'shared/utils/auth/AuthContext';
 
-const Logged = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) => {
-  const user = props.AuthUser;
+const Logged = (_: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { user } = useAuth();
 
   const handleLogout = async () => await logout({ redirect: '/' });
 
@@ -34,7 +33,7 @@ const Logged = (
         <Card className={styles.card}>
           <p>
             <Avatar style={{ marginRight: 20 }} src={user?.picture} size={60} />
-            Howdy, {user?.name} 👋🏼
+            Howdy, {user?.firstName} 👋🏼
           </p>
           <Button
             className={styles.signOut}
