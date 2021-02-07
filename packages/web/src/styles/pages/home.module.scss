@@ -1,0 +1,28 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.main {
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+
+  h1 {
+    text-align: center;
+  }
+
+  .card {
+    .googleSignIn,
+    .signOut {
+      width: 100%;
+    }
+
+    .signOut {
+      margin-top: 20px;
+    }
+  }
+}

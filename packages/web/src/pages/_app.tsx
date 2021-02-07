@@ -1,7 +1,15 @@
-import '../styles/globals.css'
+import 'styles/antd.css';
+import type { AppProps } from 'next/app';
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+// Providers
+import { AuthProvider } from 'shared/utils/auth/AuthContext';
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <AuthProvider>
+      <Component {...pageProps} />
+    </AuthProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;

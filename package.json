@@ -7,5 +7,8 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {},
-  "scripts": {}
+  "scripts": {},
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
 }
