@@ -15,10 +15,11 @@ import { LogoutOutlined } from '@ant-design/icons';
 import styles from 'styles/pages/home.module.scss';
 import { Footer } from 'shared/components/Footer';
 import withAuth from 'shared/utils/auth/withAuth';
-import { useAuth } from 'shared/utils/auth/AuthContext';
 
-const Logged = (_: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { user } = useAuth();
+const Logged = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  const user = props.AuthUser;
 
   const handleLogout = async () => await logout({ redirect: '/' });
 
@@ -53,7 +54,7 @@ const Logged = (_: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 };
 
 export const getServerSideProps = withAuth()(async ({ AuthUser }) => {
-  console.log(AuthUser.name);
+  console.log(AuthUser.firstName);
 });
 
 export default Logged;

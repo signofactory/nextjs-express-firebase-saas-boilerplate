@@ -4,15 +4,13 @@ import { GetServerSidePropsContext } from 'next';
 
 // Utils
 import nookies from 'nookies';
+import UserAPI from 'shared/lib/api/user';
 
 // Firebase auth
-import { firebaseAdmin } from 'shared/utils/auth/initializers/firebaseAdmin';
-import { refreshExpiredIdToken } from './functions/refreshExpiredToken';
+import { logout } from './functions/logout';
 
 // Types
-type AuthUserType =
-  | (firebaseAdmin.auth.DecodedIdToken & { token: string })
-  | undefined;
+type AuthUserType = User | undefined;
 
 /**
  * A wrapper for a page's exported getServerSideProps that
@@ -27,26 +25,6 @@ type AuthUserType =
  * @return {AuthUserType} response.props.AuthUser
  */
 
-// Refreshes the token if it's expired
-const verifyOrRefreshIdToken = async (
-  idToken: string,
-  refreshToken: string
-): Promise<AuthUserType> => {
-  try {
-    return {
-      ...(await firebaseAdmin.auth().verifyIdToken(idToken, true)),
-      token: idToken,
-    };
-  } catch {
-    const token = await refreshExpiredIdToken(refreshToken);
-
-    return {
-      ...(await firebaseAdmin.auth().verifyIdToken(token, true)),
-      token: token,
-    };
-  }
-};
-
 const withAuth = ({ unauthedRedirect } = { unauthedRedirect: '/' }) => (
   getServerSidePropsFunc?
 ) => async (ctx: GetServerSidePropsContext & { AuthUser: AuthUserType }) => {
@@ -55,13 +33,15 @@ const withAuth = ({ unauthedRedirect } = { unauthedRedirect: '/' }) => (
   let AuthUser: AuthUserType;
 
   if (cookies?.token) {
-    const { idToken, refreshToken } = JSON.parse(cookies.token);
+    const tokens = JSON.parse(cookies.token);
 
-    AuthUser = await verifyOrRefreshIdToken(idToken, refreshToken);
+    AuthUser = await UserAPI.getCurrent(tokens);
   }
 
   // Redirect to the login page if the user is unauthed
-  if (!AuthUser || !AuthUser.uid) {
+  if (!AuthUser || !AuthUser.id) {
+    await logout();
+
     return {
       redirect: { destination: unauthedRedirect, permanent: false },
       props: {} as never,

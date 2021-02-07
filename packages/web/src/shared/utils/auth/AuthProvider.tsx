@@ -7,12 +7,7 @@ import nookies from 'nookies';
 
 // Auth
 import { firebaseClient } from './initializers/firebaseClient';
-import UserAPI from '../lib/api/user';
 // import Api from 'shared/utils/Api';
-
-const AuthContext = createContext<{ user: User | null }>({
-  user: null,
-});
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -24,14 +19,14 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     return firebaseClient.auth().onIdTokenChanged(async (user) => {
       if (!user) {
-        console.log(`[AUTH] No user account found`);
+        console.log(`[AUTH] No user account found, destroying cookie`);
         setUser(null);
         nookies.destroy(null, 'token');
 
         return;
       }
 
-      const idToken = await user.getIdToken();
+      const idToken = (user as any).za;
       const refreshToken = user.refreshToken;
 
       const tokenCookieContent = {
@@ -43,19 +38,9 @@ export const AuthProvider: React.FC = ({ children }) => {
       nookies.destroy(null, 'token');
       nookies.set(null, 'token', JSON.stringify(tokenCookieContent), {});
 
-      // Fetches the current user from the server (instead of getting it from Firebase)
-      const userFromServer = await UserAPI.getCurrent();
-      if (userFromServer) setUser(userFromServer);
-
-      console.log(`[AUTH] Updated user`);
+      console.log(`[AUTH] Updated cookies token`);
     });
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  return useContext(AuthContext);
+  return <>{children}</>;
 };

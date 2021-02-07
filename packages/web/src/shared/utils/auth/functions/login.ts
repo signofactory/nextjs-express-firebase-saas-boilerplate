@@ -1,4 +1,7 @@
-//Router
+// Utils
+import nookies from 'nookies';
+
+// Router
 import Router from 'next/router';
 
 // Client

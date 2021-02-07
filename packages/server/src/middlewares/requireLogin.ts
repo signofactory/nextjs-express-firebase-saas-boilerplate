@@ -20,8 +20,6 @@ const verifyOrRefreshIdToken = async (
   } catch {
     const token = await refreshExpiredIdToken(refreshToken);
 
-    console.log(token);
-
     return {
       ...(await firebaseAdmin.auth().verifyIdToken(token, true)),
     };

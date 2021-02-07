@@ -16,9 +16,13 @@ const getAccessToken = () => {
 const callWithAuth = async (
   type: Method,
   url: string,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
+  tokens?: {
+    idToken: string;
+    refreshToken: string;
+  }
 ) => {
-  const { idToken, refreshToken } = getAccessToken();
+  const { idToken, refreshToken } = tokens ? tokens : getAccessToken();
 
   const response = await axios({
     method: type,

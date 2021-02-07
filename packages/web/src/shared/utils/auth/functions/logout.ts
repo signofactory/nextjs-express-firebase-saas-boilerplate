@@ -1,6 +1,9 @@
 //Router
 import Router from 'next/router';
 
+// utils
+import nookies from 'nookies';
+
 // Client
 import { firebaseClient } from '../initializers/firebaseClient';
 
